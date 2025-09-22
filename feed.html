@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+		<link rel="stylesheet" href="./src/styles/global.css" />
+	</head>
+	<body>
+		<main class="container">
+			<h1>Feed</h1>
+
+			<form id="new-post-form">
+				<label>Title <input type="text" id="post-title" required /></label>
+				<label>Body <textarea id="post-body" rows="3"></textarea></label>
+				<button type="submit">Publish</button>
+			</form>
+
+			<hr />
+
+			<section id="post-list" aria-live="polite"></section>
+
+			<p id="feed-error" style="color: crimson"></p>
+		</main>
+		<script type="module" src="./src/pages/feed.js"></script>
+	</body>
+</html>

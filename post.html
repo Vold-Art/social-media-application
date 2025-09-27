@@ -13,6 +13,26 @@
 
 			<section id="post" aria-live="polite"></section>
 			<p id="post-error" style="color: crimson"></p>
+			<div id="post-actions"></div>
+
+			<form id="edit-form" style="display: none">
+				<label>
+					Title
+					<input id="edit-title" type="text" required />
+				</label>
+
+				<label>
+					Body
+					<textarea id="edit-body" rows="4"></textarea>
+				</label>
+
+				<div>
+					<button id="edit-save-btn" type="submit">Save</button>
+					<button id="edit-cancel-btn" type="button">Cancel</button>
+				</div>
+
+				<p id="edit-error" style="color: crimson"></p>
+			</form>
 		</main>
 
 		<script type="module" src="./src/pages/post.js"></script>

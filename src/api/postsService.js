@@ -1,41 +1,43 @@
-import { requestJson } from "./apiClient";
+import { requestJson } from "./apiClient.js";
 import { getToken } from "../utils/storage.js";
 
-const AUTH_HEADER = () => ({
-	Authorization: `Bearer ${getToken()}`,
-});
+function authHeaders() {
+	const t = getToken();
+	return t ? { Authorization: `Bearer ${t}` } : {};
+}
 
-/* Fetch all posts */
-
+/* Get all posts */
 export async function fetchAllPosts() {
 	return requestJson("/social/posts");
 }
 
-/* Create a new post */
+/* Get a single post by id */
+export async function fetchPost(id) {
+	return requestJson(`/social/posts/${encodeURIComponent(id)}`);
+}
 
-export async function createPost(postData) {
+/* Create a new post */
+export async function createPost(payload) {
 	return requestJson("/social/posts", {
 		method: "POST",
-		headers: AUTH_HEADER(),
-		body: JSON.stringify(postData),
+		headers: authHeaders(),
+		body: JSON.stringify(payload),
 	});
 }
 
 /* Update an existing post */
-
-export async function updatePost(id, postData) {
-	return requestJson(`/social/posts/${id}`, {
+export async function updatePost(id, payload) {
+	return requestJson(`/social/posts/${encodeURIComponent(id)}`, {
 		method: "PUT",
-		headers: AUTH_HEADER(),
-		body: JSON.stringify(postData),
+		headers: authHeaders(),
+		body: JSON.stringify(payload),
 	});
 }
 
 /* Delete a post */
-
 export async function deletePost(id) {
-	return requestJson(`/social/posts/${id}`, {
+	return requestJson(`/social/posts/${encodeURIComponent(id)}`, {
 		method: "DELETE",
-		headers: AUTH_HEADER(),
+		headers: authHeaders(),
 	});
 }

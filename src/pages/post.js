@@ -1,7 +1,14 @@
-import { fetchPost } from "../api/postsService.js";
+import { fetchPost, deletePost, updatePost } from "../api/postsService.js";
+import { getUser } from "../utils/storage.js";
 
 const postBox = document.getElementById("post");
 const errorBox = document.getElementById("post-error");
+const actionsBox = document.getElementById("post-actions");
+const editForm = document.getElementById("edit-form");
+const editTitle = document.getElementById("edit-title");
+const editBody = document.getElementById("edit-body");
+const editError = document.getElementById("edit-error");
+const editCancelBtn = document.getElementById("edit-cancel-btn");
 
 /* Safe guard against malicious code */
 
@@ -31,7 +38,7 @@ function renderPost(p) {
 	const created = p.created ? new Date(p.created).toLocaleDateString() : "";
 	const body = p.body ? `<p>${escapeHtml(p.body)}</p>` : "";
 	const media = p.media?.url
-		? `<img src="${p.media.url}" alt="${p.media.alt || ""}">`
+		? `<img src="${p.media.url}" alt="${escapeHtml(p.media.alt || "")}">`
 		: "";
 
 	postBox.innerHTML = `
@@ -44,7 +51,112 @@ function renderPost(p) {
   `;
 }
 
-/* Load post on page start and loading message */
+/* Render Edit/Delete only if current user owns the post */
+
+function renderActions(post) {
+	if (!actionsBox) return;
+	actionsBox.innerHTML = "";
+
+	const current = getUser();
+	const isOwner =
+		current && post?.author?.name && current.name === post.author.name;
+
+	if (!isOwner) return;
+
+	actionsBox.innerHTML = `
+    <div>
+      <button id="post-edit-btn" type="button">Edit</button>
+	<button id="post-delete-btn" type="button">Delete</button>
+    </div>
+  `;
+}
+
+function wireActions(post) {
+	const delBtn = document.getElementById("post-delete-btn");
+	const editBtn = document.getElementById("post-edit-btn");
+
+	if (delBtn) {
+		delBtn.addEventListener("click", async () => {
+			const ok = confirm("Delete this post?");
+			if (!ok) return;
+
+			delBtn.disabled = true;
+			errorBox.textContent = "";
+
+			try {
+				await deletePost(post.id);
+				location.href = "./feed.html";
+			} catch (err) {
+				delBtn.disabled = false;
+				errorBox.textContent =
+					err instanceof Error ? err.message : "Failed to delete post";
+			}
+		});
+	}
+
+	if (editBtn) {
+		editBtn.addEventListener("click", () => {
+			showEditForm(post);
+		});
+	}
+}
+
+function showEditForm(post) {
+	if (!editForm || !editTitle || !editBody) return;
+
+	editError.textContent = "";
+	editTitle.value = post.title || "";
+	editBody.value = post.body || "";
+
+	editForm.style.display = "block";
+}
+
+function wireEditForm(post) {
+	if (!editForm) return;
+
+	editForm.addEventListener("submit", async (e) => {
+		e.preventDefault();
+		editError.textContent = "";
+
+		const payload = {
+			title: editTitle.value.trim(),
+			body: editBody.value.trim(),
+		};
+
+		if (!payload.title) {
+			editError.textContent = "Title is required.";
+			return;
+		}
+
+		const submitBtn = document.getElementById("edit-save-btn");
+		if (submitBtn) submitBtn.disabled = true;
+
+		try {
+			const updated = await updatePost(post.id, payload);
+			const fresh = updated?.data || updated || post;
+
+			renderPost(fresh);
+			renderActions(fresh);
+			wireActions(fresh);
+
+			editForm.style.display = "none";
+		} catch (err) {
+			editError.textContent =
+				err instanceof Error ? err.message : "Failed to update post";
+		} finally {
+			if (submitBtn) submitBtn.disabled = false;
+		}
+	});
+
+	if (editCancelBtn) {
+		editCancelBtn.addEventListener("click", () => {
+			editError.textContent = "";
+			editForm.style.display = "none";
+		});
+	}
+}
+
+/* Load post on page start and loading message/errors */
 
 (async function loadPost() {
 	if (!postBox || !errorBox) return;
@@ -61,6 +173,9 @@ function renderPost(p) {
 	try {
 		const p = await fetchPost(id);
 		renderPost(p?.data || p);
+		renderActions(p?.data || p);
+		wireActions(p?.data || p);
+		wireEditForm(p?.data || p);
 	} catch (err) {
 		errorBox.textContent =
 			err instanceof Error ? err.message : "Failed to load post";

@@ -10,17 +10,23 @@ function authPlusKeyHeaders() {
 	return headers;
 }
 
-/* Fetch all posts */
-
+/* Fetch all posts – include author info */
 export async function fetchAllPosts() {
-	return requestJson("/social/posts", {
+	return requestJson("/social/posts?_author=true", {
+		method: "GET",
+		headers: authPlusKeyHeaders(),
+	});
+}
+
+/* Fetch a single post – include author info */
+export async function fetchPost(id) {
+	return requestJson(`/social/posts/${id}?_author=true`, {
 		method: "GET",
 		headers: authPlusKeyHeaders(),
 	});
 }
 
 /* Create a new post */
-
 export async function createPost(payload) {
 	return requestJson("/social/posts", {
 		method: "POST",
@@ -30,7 +36,6 @@ export async function createPost(payload) {
 }
 
 /* Update an existing post */
-
 export async function updatePost(id, payload) {
 	return requestJson(`/social/posts/${id}`, {
 		method: "PUT",
@@ -40,7 +45,6 @@ export async function updatePost(id, payload) {
 }
 
 /* Delete a post */
-
 export async function deletePost(id) {
 	return requestJson(`/social/posts/${id}`, {
 		method: "DELETE",

@@ -52,7 +52,7 @@ function renderPosts(posts) {
 		.map((p) => {
 			const title = p.title || "(untitled)";
 			const body = p.body ? `<p>${escapeHtml(p.body)}</p>` : "";
-			const author = p.author?.name || "Unknown";
+			const author = p.author?.name || "Unknown"; // ✅ Added author
 			const created = p.created ? new Date(p.created).toLocaleString() : "";
 			const media = p.media?.url
 				? `<img src="${p.media.url}" alt="${escapeHtml(p.media.alt || "")}">`

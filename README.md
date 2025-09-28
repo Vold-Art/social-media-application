@@ -1,34 +1,55 @@
-# Social Media Application (Front-End)
+# Social Media Application
 
-A basic social media client built with **HTML, CSS, and vanilla JavaScript (ES modules)**.
-Users can register, log in, create posts, follow others, and more.
+A front-end client for the **Noroff Social Media API**.  
+Users can register, log in, create posts, edit or delete their own posts, follow other users, and view user profiles.
 
-## Live Demo
+## Features
 
-_(add Netlify/Vercel/GitHub Pages link here when deployed)_
-
-## Features (MVP)
-
-- Register new users
-- Log in / Log out
-- View all posts (feed)
-- View single post details
-- Create, edit, and delete my own posts
-- View profiles and follow/unfollow users
+- Register and log in
+- View all posts on a feed page
+- View a single post
+- Create, edit and delete your own posts
+- View your own profile and posts
+- View another user’s profile and posts
+- Follow and unfollow users
 - Search posts
 
-## Tech Stack
+## Pages
 
-- HTML5 + CSS3
+- `index.html` – Login
+- `register.html` – Register
+- `feed.html` – All posts
+- `post.html` – Single post view
+- `profile.html` – Profile page (own or other user)
+
+## Technology
+
+- HTML, CSS
 - JavaScript (ES6 modules)
-- [Noroff Social API](https://docs.noroff.dev/docs/v2/social/posts)
+- Noroff Social Media API v2
 
-## Getting Started
+## Running the Project
 
-Clone this repo and open `index.html` in your browser,  
-or use a local server (e.g. VS Code Live Server).
+1. Clone the repository
+   ```bash
+   git clone https://github.com/<your-username>/social-media-application.git
+   ```
+2. Open the project folder.
 
-```bash
-git clone https://github.com/Vold-Art/social-media-application.git
-cd social-media-application
-```
+3. Use a local server (such as VS Code Live Server) and open index.html in your browser.
+
+## Deployment
+
+The project can be deployed to GitHub Pages, Netlify or Vercel.
+Live link:
+
+## Notes
+
+LocalStorage is used to store the login token and user details.
+
+Only Noroff approved email domains can register.
+
+## Author
+
+Arnt Helge Vold
+arnvol04047@stud.noroff.no

@@ -8,11 +8,9 @@ const newPostForm = document.getElementById("new-post-form");
 const newPostTitle = document.getElementById("post-title");
 const newPostBody = document.getElementById("post-body");
 const searchInput = document.getElementById("post-search");
-let allPosts = [];
 const newPostMediaUrl = document.getElementById("post-media-url");
 const newPostMediaAlt = document.getElementById("post-media-alt");
-
-/* Redirect to index if not logged in */
+let allPosts = [];
 
 if (!isLoggedIn()) {
 	location.href = "./index.html";
@@ -26,8 +24,6 @@ function escapeHtml(str) {
 		.replaceAll('"', "&quot;")
 		.replaceAll("'", "&#039;");
 }
-
-/* Search filter */
 
 if (searchInput) {
 	searchInput.addEventListener("input", () => {
@@ -52,19 +48,23 @@ function renderPosts(posts) {
 		.map((p) => {
 			const title = p.title || "(untitled)";
 			const body = p.body ? `<p>${escapeHtml(p.body)}</p>` : "";
-			const author = p.author?.name || "Unknown"; // ✅ Added author
 			const created = p.created ? new Date(p.created).toLocaleString() : "";
 			const media = p.media?.url
 				? `<img src="${p.media.url}" alt="${escapeHtml(p.media.alt || "")}">`
 				: "";
 			const link = `./post.html?id=${encodeURIComponent(p.id)}`;
 
+			const authorName = p.author?.name || "Unknown";
+			const authorLink = p.author?.name
+				? `<a href="./profile.html?name=${encodeURIComponent(
+						p.author.name
+				  )}">${escapeHtml(authorName)}</a>`
+				: escapeHtml(authorName);
+
 			return `
         <article>
           <h2><a href="${link}">${escapeHtml(title)}</a></h2>
-          <small>by ${escapeHtml(author)} ${
-				created ? "• " + created : ""
-			}</small>
+          <small>by ${authorLink} ${created ? "• " + created : ""}</small>
           ${media}
           ${body}
         </article>
@@ -109,9 +109,7 @@ async function loadFeed() {
 	}
 }
 
-/* Create post */
-
-newPostForm.addEventListener("submit", async (e) => {
+newPostForm?.addEventListener("submit", async (e) => {
 	e.preventDefault();
 
 	const title = newPostTitle.value.trim();
@@ -142,7 +140,5 @@ newPostForm.addEventListener("submit", async (e) => {
 		if (submitBtn) submitBtn.disabled = false;
 	}
 });
-
-/* initial load */
 
 loadFeed();

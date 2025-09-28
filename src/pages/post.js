@@ -1,5 +1,6 @@
 import { fetchPost, deletePost, updatePost } from "../api/postsService.js";
-import { getUser } from "../utils/storage.js";
+import { getUser, getApiKey, saveApiKey } from "../utils/storage.js";
+import { createApiKey } from "../api/authService.js";
 
 const postBox = document.getElementById("post");
 const errorBox = document.getElementById("post-error");
@@ -10,8 +11,6 @@ const editBody = document.getElementById("edit-body");
 const editError = document.getElementById("edit-error");
 const editCancelBtn = document.getElementById("edit-cancel-btn");
 
-/* Safe guard against malicious code */
-
 function escapeHtml(str) {
 	return String(str)
 		.replaceAll("&", "&amp;")
@@ -21,14 +20,10 @@ function escapeHtml(str) {
 		.replaceAll("'", "&#039;");
 }
 
-/* Get post ID from URL */
-
 function getPostIdFromQuery() {
 	const params = new URLSearchParams(location.search);
 	return params.get("id");
 }
-
-/* Render a single post */
 
 function renderPost(p) {
 	if (!postBox) return;
@@ -51,22 +46,22 @@ function renderPost(p) {
   `;
 }
 
-/* Render Edit/Delete only if current user owns the post */
-
 function renderActions(post) {
 	if (!actionsBox) return;
 	actionsBox.innerHTML = "";
 
 	const current = getUser();
 	const isOwner =
-		current && post?.author?.name && current.name === post.author.name;
+		current?.name &&
+		post?.author?.name &&
+		current.name.toLowerCase() === post.author.name.toLowerCase();
 
 	if (!isOwner) return;
 
 	actionsBox.innerHTML = `
     <div>
       <button id="post-edit-btn" type="button">Edit</button>
-	<button id="post-delete-btn" type="button">Delete</button>
+      <button id="post-delete-btn" type="button">Delete</button>
     </div>
   `;
 }
@@ -156,7 +151,25 @@ function wireEditForm(post) {
 	}
 }
 
-/* Load post on page start and loading message/errors */
+// Ensure an API key exists on this page too (some endpoints require it)
+async function ensureApiKey() {
+	let key = getApiKey();
+	if (key) return key;
+
+	try {
+		const res = await createApiKey();
+		key = res?.data?.key ?? res?.key ?? null;
+		if (key) {
+			saveApiKey(key);
+			return key;
+		}
+		throw new Error("API key not returned from server");
+	} catch (e) {
+		throw new Error(
+			e instanceof Error ? e.message : "Failed to create API key"
+		);
+	}
+}
 
 (async function loadPost() {
 	if (!postBox || !errorBox) return;
@@ -171,11 +184,13 @@ function wireEditForm(post) {
 	errorBox.textContent = "";
 
 	try {
+		await ensureApiKey();
 		const p = await fetchPost(id);
-		renderPost(p?.data || p);
-		renderActions(p?.data || p);
-		wireActions(p?.data || p);
-		wireEditForm(p?.data || p);
+		const post = p?.data || p;
+		renderPost(post);
+		renderActions(post);
+		wireActions(post);
+		wireEditForm(post);
 	} catch (err) {
 		errorBox.textContent =
 			err instanceof Error ? err.message : "Failed to load post";

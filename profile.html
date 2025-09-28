@@ -7,6 +7,13 @@
 		<link rel="stylesheet" href="./src/styles/global.css" />
 	</head>
 	<body>
+		<header class="site-header">
+			<nav>
+				<a href="./feed.html">Feed</a>
+				<a href="./profile.html">My Profile</a>
+				<button id="logout-btn" type="button">Logout</button>
+			</nav>
+		</header>
 		<main class="container">
 			<a href="./feed.html">← Back to feed</a>
 			<h1>My Profile</h1>
@@ -19,5 +26,6 @@
 			<p id="profile-error" style="color: crimson"></p>
 		</main>
 		<script type="module" src="./src/pages/profile.js"></script>
+		<script type="module" src="./src/components/header.js"></script>
 	</body>
 </html>

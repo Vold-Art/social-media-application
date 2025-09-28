@@ -8,7 +8,9 @@ function authHeaders() {
 
 /* Get all posts */
 export async function fetchAllPosts() {
-	return requestJson("/social/posts");
+	return requestJson("/social/posts", {
+		headers: authHeaders(),
+	});
 }
 
 /* Get a single post by id */

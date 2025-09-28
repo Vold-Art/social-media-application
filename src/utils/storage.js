@@ -1,31 +1,66 @@
-/* Label keys */
-
 const TOKEN_KEY = "social_token";
 const USER_KEY = "social_user";
+const API_KEY = "social_api_key";
 
-/* Save token and user data after login/register */
+/* Save token + minimal user info */
 
-export function saveAuth(data) {
-	localStorage.setItem(TOKEN_KEY, data.accessToken);
-	localStorage.setItem(USER_KEY, JSON.stringify(data));
+export function saveAuth(resp) {
+	const data = resp?.data ?? resp ?? {};
+	const token = data.accessToken ?? null;
+	const name = data.name ?? null;
+	const email = data.email ?? null;
+
+	if (!token) {
+		localStorage.removeItem(TOKEN_KEY);
+		localStorage.removeItem(USER_KEY);
+		console.warn("[saveAuth] No accessToken in response, not saving.");
+		return;
+	}
+
+	localStorage.setItem(TOKEN_KEY, token);
+	localStorage.setItem(USER_KEY, JSON.stringify({ name, email }));
 }
 
-/* Get saved token */
+/* Read saved JWT (or null) */
 
 export function getToken() {
-	return localStorage.getItem(TOKEN_KEY);
+	const t = localStorage.getItem(TOKEN_KEY);
+	return t && t !== "undefined" ? t : null;
 }
 
-/* Get saved user object */
+/* Read saved user object (or null) */
 
 export function getUser() {
 	const raw = localStorage.getItem(USER_KEY);
-	return raw ? JSON.parse(raw) : null;
+	if (!raw) return null;
+	try {
+		return JSON.parse(raw);
+	} catch {
+		localStorage.removeItem(USER_KEY);
+		return null;
+	}
 }
 
-/* Remove token and user keys */
+/* Save / read Noroff API key */
+
+export function saveApiKey(key) {
+	if (key) localStorage.setItem(API_KEY, key);
+}
+export function getApiKey() {
+	const k = localStorage.getItem(API_KEY);
+	return k && k !== "undefined" ? k : null;
+}
+
+/* Clear all auth-related storage */
 
 export function clearAuth() {
 	localStorage.removeItem(TOKEN_KEY);
 	localStorage.removeItem(USER_KEY);
+	localStorage.removeItem(API_KEY);
+}
+
+/* Quick boolean check */
+
+export function isLoggedIn() {
+	return !!getToken();
 }

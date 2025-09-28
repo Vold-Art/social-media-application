@@ -44,7 +44,8 @@ form?.addEventListener("submit", async (e) => {
 
 		location.href = "./feed.html";
 	} catch (err) {
-		errorBox.textContent =
-			err instanceof Error ? err.message : "Registration failed";
+		const msg = err instanceof Error ? err.message : "Registration failed";
+		console.error("[register] error:", msg);
+		errorBox.textContent = msg;
 	}
 });

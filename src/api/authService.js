@@ -1,6 +1,11 @@
 import { requestJson } from "./apiClient.js";
 
-/* Register User */
+export async function loginUser(credentials) {
+	return requestJson("/auth/login", {
+		method: "POST",
+		body: JSON.stringify(credentials),
+	});
+}
 
 export async function registerUser(userData) {
 	return requestJson("/auth/register", {
@@ -9,11 +14,10 @@ export async function registerUser(userData) {
 	});
 }
 
-/* Log in User */
-
-export async function loginUser(credentials) {
-	return requestJson("/auth/login", {
+export async function createApiKey() {
+	const body = { name: `social-app-${Date.now()}` };
+	return requestJson("/auth/create-api-key", {
 		method: "POST",
-		body: JSON.stringify(credentials),
+		body: JSON.stringify(body),
 	});
 }

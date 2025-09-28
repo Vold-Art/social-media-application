@@ -1,5 +1,6 @@
 import { fetchAllPosts, createPost } from "../api/postsService.js";
-import { isLoggedIn } from "../utils/storage.js";
+import { isLoggedIn, getApiKey, saveApiKey } from "../utils/storage.js";
+import { createApiKey } from "../api/authService.js";
 
 const list = document.getElementById("post-list");
 const errorBox = document.getElementById("feed-error");
@@ -8,14 +9,14 @@ const newPostTitle = document.getElementById("post-title");
 const newPostBody = document.getElementById("post-body");
 const searchInput = document.getElementById("post-search");
 let allPosts = [];
+const newPostMediaUrl = document.getElementById("post-media-url");
+const newPostMediaAlt = document.getElementById("post-media-alt");
 
-/* Check if logged in */
+/* Redirect to index if not logged in */
 
 if (!isLoggedIn()) {
-	location.href = "./login.html";
+	location.href = "./index.html";
 }
-
-/* Safe guard against malicious code */
 
 function escapeHtml(str) {
 	return String(str)
@@ -26,7 +27,7 @@ function escapeHtml(str) {
 		.replaceAll("'", "&#039;");
 }
 
-/* Input filter search */
+/* Search filter */
 
 if (searchInput) {
 	searchInput.addEventListener("input", () => {
@@ -39,8 +40,6 @@ if (searchInput) {
 		renderPosts(filtered);
 	});
 }
-
-/* Render posts */
 
 function renderPosts(posts) {
 	if (!list) return;
@@ -74,13 +73,32 @@ function renderPosts(posts) {
 		.join("");
 }
 
-/* Load posts */
+async function ensureApiKey() {
+	let key = getApiKey();
+	if (key) return key;
+
+	try {
+		const res = await createApiKey();
+		key = res?.data?.key ?? res?.key ?? null;
+		if (key) {
+			saveApiKey(key);
+			return key;
+		}
+		throw new Error("API key not returned from server");
+	} catch (e) {
+		throw new Error(
+			e instanceof Error ? e.message : "Failed to create API key"
+		);
+	}
+}
 
 async function loadFeed() {
 	if (!list || !errorBox) return;
 	list.innerHTML = `<p>Loading posts...</p>`;
 	errorBox.textContent = "";
+
 	try {
+		await ensureApiKey();
 		const posts = await fetchAllPosts();
 		allPosts = posts?.data || posts;
 		renderPosts(allPosts);
@@ -91,36 +109,40 @@ async function loadFeed() {
 	}
 }
 
-/* Create post form */
+/* Create post */
 
-if (newPostForm) {
-	newPostForm.addEventListener("submit", async (e) => {
-		e.preventDefault();
+newPostForm.addEventListener("submit", async (e) => {
+	e.preventDefault();
 
-		const title = newPostTitle.value.trim();
-		const body = newPostBody.value.trim();
+	const title = newPostTitle.value.trim();
+	const body = newPostBody.value.trim();
+	const mediaUrl = newPostMediaUrl?.value.trim();
+	const mediaAlt = newPostMediaAlt?.value.trim();
 
-		if (!title) {
-			alert("Title is required.");
-			return;
-		}
+	if (!title) {
+		alert("Title is required.");
+		return;
+	}
 
-		const submitBtn = newPostForm.querySelector("button[type=submit]");
-		if (submitBtn) submitBtn.disabled = true;
+	const payload = mediaUrl
+		? { title, body, media: { url: mediaUrl, alt: mediaAlt || "" } }
+		: { title, body };
 
-		try {
-			await createPost({ title, body });
-			newPostForm.reset();
-			await loadFeed(); // now works because loadFeed is in scope
-			newPostTitle.focus();
-		} catch (err) {
-			alert(err instanceof Error ? err.message : "Failed to create post");
-		} finally {
-			if (submitBtn) submitBtn.disabled = false;
-		}
-	});
-}
+	const submitBtn = newPostForm.querySelector("button[type=submit]");
+	if (submitBtn) submitBtn.disabled = true;
 
-/* Initial load */
+	try {
+		await createPost(payload);
+		newPostForm.reset();
+		await loadFeed();
+		newPostTitle.focus();
+	} catch (err) {
+		alert(err instanceof Error ? err.message : "Failed to create post");
+	} finally {
+		if (submitBtn) submitBtn.disabled = false;
+	}
+});
+
+/* initial load */
 
 loadFeed();

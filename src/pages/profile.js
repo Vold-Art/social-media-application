@@ -13,7 +13,7 @@ const actionsBox = document.getElementById("profile-actions");
 /* Check if logged in */
 
 if (!isLoggedIn()) {
-	location.href = "./login.html";
+	location.href = "./index.html";
 }
 
 /* Safe guard against malicious code */

@@ -1,7 +1,5 @@
 import { getUser, clearAuth } from "../utils/storage.js";
 
-/* Hide/show based on login state */
-
 const logoutBtn = document.getElementById("logout-btn");
 const profileLink = document.querySelector('a[href="./profile.html"]');
 

@@ -8,10 +8,10 @@
 	</head>
 	<body>
 		<header class="site-header">
-			<nav>
+			<nav class="container">
 				<a href="./feed.html">Feed</a>
-				<a href="./profile.html">My Profile</a>
-				<button id="logout-btn" type="button">Logout</button>
+				<span style="flex: 1"></span>
+				<a href="./register.html">Register</a>
 			</nav>
 		</header>
 		<main class="container">
@@ -27,6 +27,19 @@
 			<form id="new-post-form">
 				<label>Title <input type="text" id="post-title" required /></label>
 				<label>Body <textarea id="post-body" rows="3"></textarea></label>
+				<label>
+					Image URL (optional)
+					<input id="post-media-url" type="url" placeholder="https://…" />
+				</label>
+
+				<label>
+					Image alt text (optional)
+					<input
+						id="post-media-alt"
+						type="text"
+						placeholder="Describe the image"
+					/>
+				</label>
 				<button type="submit">Publish</button>
 			</form>
 

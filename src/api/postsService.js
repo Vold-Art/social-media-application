@@ -1,45 +1,49 @@
 import { requestJson } from "./apiClient.js";
-import { getToken } from "../utils/storage.js";
+import { getToken, getApiKey } from "../utils/storage.js";
 
-function authHeaders() {
+function authPlusKeyHeaders() {
 	const t = getToken();
-	return t ? { Authorization: `Bearer ${t}` } : {};
+	const k = getApiKey();
+	const headers = {};
+	if (t) headers.Authorization = `Bearer ${t}`;
+	if (k) headers["X-Noroff-API-Key"] = k;
+	return headers;
 }
 
-/* Get all posts */
+/* Fetch all posts */
+
 export async function fetchAllPosts() {
 	return requestJson("/social/posts", {
-		headers: authHeaders(),
+		method: "GET",
+		headers: authPlusKeyHeaders(),
 	});
 }
 
-/* Get a single post by id */
-export async function fetchPost(id) {
-	return requestJson(`/social/posts/${encodeURIComponent(id)}`);
-}
-
 /* Create a new post */
+
 export async function createPost(payload) {
 	return requestJson("/social/posts", {
 		method: "POST",
-		headers: authHeaders(),
+		headers: authPlusKeyHeaders(),
 		body: JSON.stringify(payload),
 	});
 }
 
 /* Update an existing post */
+
 export async function updatePost(id, payload) {
-	return requestJson(`/social/posts/${encodeURIComponent(id)}`, {
+	return requestJson(`/social/posts/${id}`, {
 		method: "PUT",
-		headers: authHeaders(),
+		headers: authPlusKeyHeaders(),
 		body: JSON.stringify(payload),
 	});
 }
 
 /* Delete a post */
+
 export async function deletePost(id) {
-	return requestJson(`/social/posts/${encodeURIComponent(id)}`, {
+	return requestJson(`/social/posts/${id}`, {
 		method: "DELETE",
-		headers: authHeaders(),
+		headers: authPlusKeyHeaders(),
 	});
 }

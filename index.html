@@ -8,15 +8,32 @@
 	</head>
 	<body>
 		<header class="site-header">
-			<nav>
+			<nav class="container">
 				<a href="./feed.html">Feed</a>
-				<a href="./profile.html">My Profile</a>
-				<button id="logout-btn" type="button">Logout</button>
+				<span style="flex: 1"></span>
+				<a href="./register.html">Register</a>
 			</nav>
 		</header>
 
-		<main></main>
-		<script type="module" src="./src/main.js"></script>
-		<script type="module" src="./src/components/header.js"></script>
+		<main class="container auth-container">
+			<h1>Login</h1>
+
+			<form id="login-form" class="auth-form">
+				<label for="login-email">Email</label>
+				<input id="login-email" type="email" required />
+
+				<label for="login-password">Password</label>
+				<input id="login-password" type="password" required />
+
+				<button type="submit">Login</button>
+				<p id="login-error" class="error"></p>
+			</form>
+
+			<p class="switch">
+				Not a user? <a href="./register.html">Register here</a>
+			</p>
+		</main>
+
+		<script type="module" src="./src/pages/login.js"></script>
 	</body>
 </html>

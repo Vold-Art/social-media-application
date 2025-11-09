@@ -39,34 +39,51 @@ if (searchInput) {
 
 function renderPosts(posts) {
 	if (!list) return;
+
 	if (!Array.isArray(posts) || posts.length === 0) {
-		list.innerHTML = `<p>No posts yet.</p>`;
+		list.innerHTML = `<p class="text-gray-500 italic font-roboto">No posts yet.</p>`;
 		return;
 	}
 
 	list.innerHTML = posts
 		.map((p) => {
 			const title = p.title || "(untitled)";
-			const body = p.body ? `<p>${escapeHtml(p.body)}</p>` : "";
+			const body = p.body ? escapeHtml(p.body) : "";
 			const created = p.created ? new Date(p.created).toLocaleString() : "";
-			const media = p.media?.url
-				? `<img src="${p.media.url}" alt="${escapeHtml(p.media.alt || "")}">`
-				: "";
 			const link = `./post.html?id=${encodeURIComponent(p.id)}`;
 
 			const authorName = p.author?.name || "Unknown";
 			const authorLink = p.author?.name
-				? `<a href="./profile.html?name=${encodeURIComponent(
-						p.author.name
-				  )}">${escapeHtml(authorName)}</a>`
-				: escapeHtml(authorName);
+				? `<a 
+              href="./profile.html?name=${encodeURIComponent(p.author.name)}" 
+              class="font-roboto font-medium text-gray-600 hover:text-charcoal hover:underline"
+            >
+              ${escapeHtml(authorName)}
+            </a>`
+				: `<span class="font-roboto font-medium text-gray-600">
+            ${escapeHtml(authorName)}
+          </span>`;
+
+			const media = p.media?.url
+				? `<img 
+            src="${p.media.url}" 
+            alt="${escapeHtml(p.media.alt || "")}" 
+            class="w-full h-56 object-cover rounded-md mb-3"
+          />`
+				: "";
 
 			return `
-        <article>
-          <h2><a href="${link}">${escapeHtml(title)}</a></h2>
-          <small>by ${authorLink} ${created ? "• " + created : ""}</small>
+        <article class="font-roboto bg-white rounded-lg shadow-md p-6 flex flex-col gap-2 max-w-4xl mx-auto">
+          <h2 class="text-lg font-semibold text-gray-900">
+            <a href="${link}" class="hover:underline">
+              ${escapeHtml(title)}
+            </a>
+          </h2>
+          <small class="text-sm text-gray-500">
+            by ${authorLink} ${created ? "• " + created : ""}
+          </small>
           ${media}
-          ${body}
+          ${body ? `<p class="text-gray-800 leading-relaxed">${body}</p>` : ""}
         </article>
       `;
 		})

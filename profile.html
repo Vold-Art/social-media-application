@@ -3,29 +3,85 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Document</title>
-		<link rel="stylesheet" href="./src/styles/global.css" />
+		<title>Profile | Social App</title>
+		<link rel="icon" href="./favicon.ico" />
+		<link rel="stylesheet" href="./src/css/style.css" />
 	</head>
-	<body>
-		<header class="site-header">
-			<nav class="container">
-				<a href="./feed.html">Feed</a>
-				<a href="./register.html">Register</a>
-				<a href="./logout.html">Logout</a>
-				<a href="./profile.html">Profile</a>
+
+	<body
+		class="font-roboto bg-gray-100 min-h-screen flex flex-col text-gray-900"
+	>
+		<header class="bg-charcoal text-white shadow-md">
+			<nav
+				class="container mx-auto flex flex-wrap items-center justify-between px-4 py-3"
+			>
+				<h1 class="font-semibold text-lg tracking-wide">Social App</h1>
+				<div class="flex gap-4 text-sm sm:text-base">
+					<a href="./feed.html" class="hover:text-gray-300">Feed</a>
+					<a href="./register.html" class="hover:text-gray-300">Register</a>
+					<a href="./logout.html" class="hover:text-gray-300">Logout</a>
+					<a href="./profile.html" class="hover:text-gray-300 font-semibold"
+						>Profile</a
+					>
+				</div>
 			</nav>
 		</header>
-		<main class="container">
-			<a href="./feed.html">← Back to feed</a>
-			<h1>My Profile</h1>
-			<div id="profile-actions"></div>
 
-			<section id="profile" aria-live="polite"></section>
-			<h2>My Posts</h2>
-			<section id="profile-posts" aria-live="polite"></section>
+		<main class="container mx-auto flex-1 px-4 py-8 max-w-4xl">
+			<a
+				href="./feed.html"
+				class="inline-flex items-center text-sm text-gray-600 hover:text-charcoal mb-4"
+			>
+				<span class="mr-1">←</span> Back to feed
+			</a>
 
-			<p id="profile-error" style="color: crimson"></p>
+			<h2 class="text-2xl font-bold text-gray-800 mb-4">My Profile</h2>
+
+			<section
+				id="profile"
+				aria-live="polite"
+				class="bg-white rounded-lg shadow-md p-6 mb-8"
+			>
+				<div
+					class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+				>
+					<div>
+						<h3 id="profile-name" class="text-xl font-semibold text-gray-900">
+							Loading...
+						</h3>
+						<p id="profile-bio" class="text-gray-600 text-sm mt-1">
+							Profile details will appear here.
+						</p>
+					</div>
+
+					<img
+						id="profile-avatar"
+						src=""
+						alt="Profile picture"
+						class="w-24 h-24 rounded-full object-cover border border-gray-300"
+					/>
+				</div>
+
+				<div
+					id="profile-actions"
+					class="flex gap-3 mt-6 flex-wrap items-center"
+				></div>
+			</section>
+
+			<h3 class="text-xl font-semibold text-gray-800 mb-4">My Posts</h3>
+
+			<section
+				id="profile-posts"
+				aria-live="polite"
+				class="space-y-4 max-w-3xl mx-auto"
+			></section>
+
+			<p
+				id="profile-error"
+				class="text-red-500 text-sm mt-4 min-h-[1.25rem]"
+			></p>
 		</main>
+
 		<script type="module" src="./src/pages/profile.js"></script>
 		<script type="module" src="./src/components/header.js"></script>
 	</body>

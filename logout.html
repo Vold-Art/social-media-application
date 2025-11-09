@@ -3,16 +3,22 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Logging out…</title>
-		<meta http-equiv="refresh" content="0; url=./" />
+		<title>Logging out… | Social App</title>
+		<link rel="icon" href="./favicon.ico" />
+		<link rel="stylesheet" href="./src/css/style.css" />
+		<meta http-equiv="refresh" content="1; url=./" />
 	</head>
-	<body>
+
+	<body
+		class="font-roboto bg-gray-100 min-h-screen flex items-center justify-center text-gray-800"
+	>
+		<p class="text-lg font-medium">Logging out…</p>
+
 		<script type="module">
 			localStorage.removeItem("social_token");
 			localStorage.removeItem("social_user");
 			localStorage.removeItem("social_api_key");
-			location.replace("./"); // go to index
+			location.replace("./");
 		</script>
-		<p>Logging out…</p>
 	</body>
 </html>

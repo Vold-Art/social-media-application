@@ -3,43 +3,98 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Document</title>
-		<link rel="stylesheet" href="./src/styles/global.css" />
+		<title>Post | Social App</title>
+		<link rel="icon" href="./favicon.ico" />
+		<link rel="stylesheet" href="./src/css/style.css" />
 	</head>
-	<body>
-		<header class="site-header">
-			<nav class="container">
-				<a href="./feed.html">Feed</a>
-				<a href="./register.html">Register</a>
-				<a href="./logout.html">Logout</a>
-				<a href="./profile.html">Profile</a>
+
+	<body
+		class="font-roboto bg-gray-100 min-h-screen flex flex-col text-gray-900"
+	>
+		<header class="bg-charcoal text-white shadow-md">
+			<nav
+				class="container mx-auto flex flex-wrap items-center justify-between px-4 py-3"
+			>
+				<h1 class="font-semibold text-lg tracking-wide">Social App</h1>
+				<div class="flex gap-4 text-sm sm:text-base">
+					<a href="./feed.html" class="hover:text-gray-300">Feed</a>
+					<a href="./register.html" class="hover:text-gray-300">Register</a>
+					<a href="./logout.html" class="hover:text-gray-300">Logout</a>
+					<a href="./profile.html" class="hover:text-gray-300">Profile</a>
+				</div>
 			</nav>
 		</header>
-		<main class="container">
-			<a href="./feed.html">← Back to feed</a>
-			<h1>Post</h1>
 
-			<section id="post" aria-live="polite"></section>
-			<p id="post-error" style="color: crimson"></p>
-			<div id="post-actions"></div>
+		<main class="container mx-auto flex-1 px-4 py-8 max-w-3xl">
+			<a
+				href="./feed.html"
+				class="inline-flex items-center text-sm text-gray-600 hover:text-charcoal mb-4"
+			>
+				<span class="mr-1">←</span> Back to feed
+			</a>
 
-			<form id="edit-form" style="display: none">
-				<label>
-					Title
-					<input id="edit-title" type="text" required />
-				</label>
+			<h2 class="text-2xl font-bold text-gray-800 mb-4">Post</h2>
 
-				<label>
-					Body
-					<textarea id="edit-body" rows="4"></textarea>
-				</label>
+			<section id="post" aria-live="polite" class="space-y-4"></section>
 
+			<p id="post-error" class="text-red-500 text-sm mt-2 min-h-[1.25rem]"></p>
+
+			<div id="post-actions" class="mt-4"></div>
+
+			<form
+				id="edit-form"
+				style="display: none"
+				class="bg-white rounded-lg shadow-md p-6 mt-8 space-y-4"
+			>
 				<div>
-					<button id="edit-save-btn" type="submit">Save</button>
-					<button id="edit-cancel-btn" type="button">Cancel</button>
+					<label
+						for="edit-title"
+						class="block text-sm font-medium text-gray-700 mb-1"
+						>Title</label
+					>
+					<input
+						id="edit-title"
+						type="text"
+						required
+						class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+					/>
 				</div>
 
-				<p id="edit-error" style="color: crimson"></p>
+				<div>
+					<label
+						for="edit-body"
+						class="block text-sm font-medium text-gray-700 mb-1"
+						>Body</label
+					>
+					<textarea
+						id="edit-body"
+						rows="4"
+						class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm resize-y focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+					></textarea>
+				</div>
+
+				<div class="flex gap-3">
+					<button
+						id="edit-save-btn"
+						type="submit"
+						class="inline-flex items-center justify-center bg-gray-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-charcoal focus:outline-none focus:ring-2 focus:ring-charcoal focus:ring-offset-2"
+					>
+						Save
+					</button>
+
+					<button
+						id="edit-cancel-btn"
+						type="button"
+						class="inline-flex items-center justify-center border border-gray-300 text-gray-700 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
+					>
+						Cancel
+					</button>
+				</div>
+
+				<p
+					id="edit-error"
+					class="text-red-500 text-sm mt-2 min-h-[1.25rem]"
+				></p>
 			</form>
 		</main>
 

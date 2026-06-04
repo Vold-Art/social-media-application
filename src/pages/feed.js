@@ -10,6 +10,10 @@ const newPostBody = document.getElementById("post-body");
 const searchInput = document.getElementById("post-search");
 const newPostMediaUrl = document.getElementById("post-media-url");
 const newPostMediaAlt = document.getElementById("post-media-alt");
+const pagination = document.getElementById("pagination");
+const postsPerPage = 30;
+let currentPage = 1;
+let visiblePosts = [];
 let allPosts = [];
 
 if (!isLoggedIn()) {
@@ -28,12 +32,60 @@ function escapeHtml(str) {
 if (searchInput) {
 	searchInput.addEventListener("input", () => {
 		const q = searchInput.value.trim().toLowerCase();
-		const filtered = allPosts.filter(
+
+		visiblePosts = allPosts.filter(
 			(p) =>
 				(p.title && p.title.toLowerCase().includes(q)) ||
-				(p.body && p.body.toLowerCase().includes(q))
+				(p.body && p.body.toLowerCase().includes(q)),
 		);
-		renderPosts(filtered);
+
+		currentPage = 1;
+		renderPosts(visiblePosts);
+	});
+}
+
+function renderPagination(posts) {
+	if (!pagination) return;
+
+	const totalPages = Math.ceil(posts.length / postsPerPage);
+
+	if (totalPages <= 1) {
+		pagination.innerHTML = "";
+		return;
+	}
+
+	pagination.innerHTML = `
+		<button
+			type="button"
+			id="prev-page"
+			class="rounded-md bg-gray-500 px-4 py-2 text-sm font-medium text-white hover:bg-charcoal disabled:cursor-not-allowed disabled:opacity-50"
+			${currentPage === 1 ? "disabled" : ""}
+		>
+			Previous
+		</button>
+
+		<span class="text-sm text-gray-700" aria-live="polite">
+			Page ${currentPage} of ${totalPages}
+		</span>
+
+		<button
+			type="button"
+			id="next-page"
+			class="rounded-md bg-gray-500 px-4 py-2 text-sm font-medium text-white hover:bg-charcoal disabled:cursor-not-allowed disabled:opacity-50"
+			${currentPage === totalPages ? "disabled" : ""}
+		>
+			Next
+		</button>
+	`;
+
+	document.getElementById("prev-page")?.addEventListener("click", () => {
+		currentPage -= 1;
+		renderPosts(posts);
+	});
+
+	document.getElementById("next-page")?.addEventListener("click", () => {
+		currentPage += 1;
+		renderPosts(posts);
 	});
 }
 
@@ -41,11 +93,16 @@ function renderPosts(posts) {
 	if (!list) return;
 
 	if (!Array.isArray(posts) || posts.length === 0) {
-		list.innerHTML = `<p class="text-gray-500 italic font-roboto">No posts yet.</p>`;
+		list.innerHTML = `<p class="text-gray-500 italic font-roboto">No posts found.</p>`;
+		if (pagination) pagination.innerHTML = "";
 		return;
 	}
 
-	list.innerHTML = posts
+	const start = (currentPage - 1) * postsPerPage;
+	const end = start + postsPerPage;
+	const paginatedPosts = posts.slice(start, end);
+
+	list.innerHTML = paginatedPosts
 		.map((p) => {
 			const title = p.title || "(untitled)";
 			const body = p.body ? escapeHtml(p.body) : "";
@@ -55,39 +112,44 @@ function renderPosts(posts) {
 			const authorName = p.author?.name || "Unknown";
 			const authorLink = p.author?.name
 				? `<a 
-              href="./profile.html?name=${encodeURIComponent(p.author.name)}" 
-              class="font-roboto font-medium text-gray-600 hover:text-charcoal hover:underline"
-            >
-              ${escapeHtml(authorName)}
-            </a>`
+					href="./profile.html?name=${encodeURIComponent(p.author.name)}" 
+					class="font-roboto font-medium text-gray-600 hover:text-charcoal hover:underline"
+				>
+					${escapeHtml(authorName)}
+				</a>`
 				: `<span class="font-roboto font-medium text-gray-600">
-            ${escapeHtml(authorName)}
-          </span>`;
+					${escapeHtml(authorName)}
+				</span>`;
 
 			const media = p.media?.url
 				? `<img 
-            src="${p.media.url}" 
-            alt="${escapeHtml(p.media.alt || "")}" 
-            class="w-full h-56 object-cover rounded-md mb-3"
-          />`
+					src="${p.media.url}" 
+					alt="${escapeHtml(p.media.alt || "")}" 
+					class="w-full h-56 object-cover rounded-md mb-3"
+				/>`
 				: "";
 
 			return `
-        <article class="font-roboto bg-white rounded-lg shadow-md p-6 flex flex-col gap-2 max-w-4xl mx-auto">
-          <h2 class="text-lg font-semibold text-gray-900">
-            <a href="${link}" class="hover:underline">
-              ${escapeHtml(title)}
-            </a>
-          </h2>
-          <small class="text-sm text-gray-500">
-            by ${authorLink} ${created ? "• " + created : ""}
-          </small>
-          ${media}
-          ${body ? `<p class="text-gray-800 leading-relaxed">${body}</p>` : ""}
-        </article>
-      `;
+				<article class="font-roboto bg-white rounded-lg shadow-md p-6 flex flex-col gap-2 max-w-4xl mx-auto">
+					<h2 class="text-lg font-semibold text-gray-900">
+						<a href="${link}" class="hover:underline">
+							${escapeHtml(title)}
+						</a>
+					</h2>
+
+					<small class="text-sm text-gray-500">
+						by ${authorLink} ${created ? "• " + created : ""}
+					</small>
+
+					${media}
+
+					${body ? `<p class="text-gray-800 leading-relaxed">${body}</p>` : ""}
+				</article>
+			`;
 		})
 		.join("");
+
+	renderPagination(posts);
 }
 
 async function ensureApiKey() {
@@ -104,7 +166,7 @@ async function ensureApiKey() {
 		throw new Error("API key not returned from server");
 	} catch (e) {
 		throw new Error(
-			e instanceof Error ? e.message : "Failed to create API key"
+			e instanceof Error ? e.message : "Failed to create API key",
 		);
 	}
 }
@@ -118,7 +180,9 @@ async function loadFeed() {
 		await ensureApiKey();
 		const posts = await fetchAllPosts();
 		allPosts = posts?.data || posts;
-		renderPosts(allPosts);
+		visiblePosts = allPosts;
+		currentPage = 1;
+		renderPosts(visiblePosts);
 	} catch (err) {
 		errorBox.textContent =
 			err instanceof Error ? err.message : "Failed to load posts";
@@ -135,7 +199,8 @@ newPostForm?.addEventListener("submit", async (e) => {
 	const mediaAlt = newPostMediaAlt?.value.trim();
 
 	if (!title) {
-		alert("Title is required.");
+		errorBox.textContent = "Title is required.";
+		newPostTitle.focus();
 		return;
 	}
 
@@ -152,7 +217,8 @@ newPostForm?.addEventListener("submit", async (e) => {
 		await loadFeed();
 		newPostTitle.focus();
 	} catch (err) {
-		alert(err instanceof Error ? err.message : "Failed to create post");
+		errorBox.textContent =
+			err instanceof Error ? err.message : "Failed to create post";
 	} finally {
 		if (submitBtn) submitBtn.disabled = false;
 	}

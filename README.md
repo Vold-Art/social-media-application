@@ -1,5 +1,5 @@
 <p>
-  <img src="./social-media-application-screenshot.jpg" alt="Social Media App Screenshot"/>
+  <img src="./css-frameworks-screenshot.webp" alt="Social Media App Screenshot"/>
 </p>
 
 # Social Media Application
@@ -7,6 +7,18 @@
 A responsive front-end social media app built with Tailwind CSS for the CSS Frameworks course at Noroff.
 
 Users can register, log in, create posts, edit or delete their own posts, follow other users, and view user profiles.
+
+---
+
+## Live Site
+
+[View live site](https://vold-art.github.io/social-media-application/)
+
+---
+
+## Repository
+
+[View GitHub repository](https://github.com/Vold-Art/social-media-application)
 
 ---
 
@@ -43,11 +55,13 @@ npm run build            # Build and minify CSS for production
 
 ## Technologies used
 
--HTML5
--CSS3
--Tailwind CSS
--JavaScript (ES Modules)
--Node.js & npm
+- HTML5
+- CSS3
+- Tailwind CSS
+- JavaScript
+- JavaScript ES Modules
+- Node.js
+- npm
 
 ---
 
@@ -75,6 +89,21 @@ social-media-application/
 ├── package.json
 ├── package-lock.json
 └── README.md
+
+---
+
+## Portfolio 2 Improvements
+
+For Portfolio 2, the feed page was improved with better accessibility and usability.
+
+Improvements include:
+
+- Added accessible inline error feedback for the create-post form.
+- Connected form feedback to the form using `aria-describedby`.
+- Added `role="alert"` and `aria-live` so important error messages can be announced by assistive technologies.
+- Added pagination to the feed so posts are displayed in smaller groups instead of rendering all posts at once.
+
+These changes make the feed easier to navigate and improve the experience for keyboard and screen reader users.
 
 ---
 
